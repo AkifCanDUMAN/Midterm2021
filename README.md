@@ -2,4 +2,4 @@
 
 >Simulation Moving Shapes
 >
->Akif Can DUMAN
+>Akif Can DUMAN / COM20
