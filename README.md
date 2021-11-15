@@ -5,6 +5,8 @@
 >Akif Can DUMAN / COM20
 >
 >This application is a javafx project that generates random rectangles and polygons and repeats them on the screen in a smule manner.
+>
+>I have completed the simulation of this application by creating lines that generate random colors and shapes in many codes.
 
 
 # Screenshots
