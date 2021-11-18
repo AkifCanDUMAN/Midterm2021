@@ -31,20 +31,10 @@ public class Animation extends Application {
         Scene scene = new Scene(group, width, height);
 
 
-        Polygon poly = new Polygon();
-        poly.getPoints().addAll();
-        poly.setFill(Color.CHOCOLATE);
-        poly.setStrokeWidth(8.0);
-        poly.setStroke(Color.BROWN);
-        group.getChildren().add(poly);
-
-        for (int i = 0; i<1000; i++){
+        for (int i = 0; i<100; i++){
             addRandomShapeandTrans((int) (Math.random()*25),primaryStage,group,scene);
-//            group.getChildren().add(poly);
+
 //            Thread.sleep(100);
-
-
-
         }
         saveToFile();
 
@@ -54,6 +44,21 @@ public class Animation extends Application {
     }
     public static void main(String[] args) {
         Application.launch(args);
+    }
+    private void addRandomShapeandTrans(int radius, Stage primaryStage, Group grup, Scene scen){
+
+
+        int random = (int) (Math.random()*2);
+
+        if (random == 0){
+            Polygon my_ball = addPoly(primaryStage,grup,scen);
+            transition(my_ball);
+        }
+        else if (random == 1 ){
+            Rectangle my_ball = addRect(primaryStage,grup,scen);
+            transition(my_ball);
+        }
+
     }
     private Polygon addPoly(Stage primaryStage, Group grup, Scene scen){
 
@@ -95,25 +100,11 @@ public class Animation extends Application {
         return ball;
     }
 
-    private void addRandomShapeandTrans(int radius, Stage primaryStage, Group grup, Scene scen){
 
-
-        int random = (int) (Math.random()*2);
-
-        if (random == 0){
-            Polygon my_ball = addPoly(primaryStage,grup,scen);
-            transition(my_ball);
-        }
-        else if (random == 1 ){
-            Rectangle my_ball = addRect(primaryStage,grup,scen);
-            transition(my_ball);
-        }
-
-    }
-    private void transition(Shape my_ball){
-        Duration duration = Duration.millis(Math.random()*30000);
+    private void transition(Shape shape){
+        Duration duration = Duration.millis(Math.random()*10000);
         //Create new translate transition
-        TranslateTransition transition = new TranslateTransition(duration, my_ball);
+        TranslateTransition transition = new TranslateTransition(duration, shape);
         //Move in X axis by +200
         int rand1 = -500 + new Random().nextInt(1000);
         int rand2 = -500 + new Random().nextInt(1000);
@@ -129,7 +120,7 @@ public class Animation extends Application {
     }
     public String saveToFile() {
         try {
-            FileWriter writer = new FileWriter("ballsizes.txt");
+            FileWriter writer = new FileWriter("sizes.txt");
             for (double[] ballxy:ballsizeArraylist
                  ) {
                 int i = 0;
