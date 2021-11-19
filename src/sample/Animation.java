@@ -13,6 +13,8 @@ import javafx.util.Duration;
 import javafx.scene.paint.Color;
 
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -20,9 +22,18 @@ import java.util.Random;
 
 public class Animation extends Application {
     static ArrayList<double[]> ballsizeArraylist = new ArrayList<>();
+    static int countofrectangle = 0;
+    int numofShapes = 100;
 
+
+
+
+    public static void main(String[] args) {
+        Application.launch(args);
+    }
     @Override
-    public void start(Stage primaryStage) throws Exception {
+
+    public void start(Stage primaryStage) {
 //        Circle btn = new Circle(60);
         int width = 800;
         int height = 800;
@@ -30,37 +41,74 @@ public class Animation extends Application {
         Group group = new Group(canvas);
         Scene scene = new Scene(group, width, height);
 
-
-        for (int i = 0; i<100; i++){
-            addRandomShapeandTrans((int) (Math.random()*25),primaryStage,group,scene);
-
-//            Thread.sleep(100);
+        double[][] rectPositionsList = readFile();
+        for (int i = 0; i<numofShapes; i++){
+//            addRandomShapeandTrans(group,rectPositionsList); // uncomment if you want rectangles with predefined positions
+            addRandomShapeandTrans(group);
         }
-        saveToFile();
-
+        System.out.println("rectangle pos list num:" +rectPositionsList.length);
+        if (rectPositionsList[0][0] == 0){
+            saveToFile();
+        }
 
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    public static void main(String[] args) {
-        Application.launch(args);
-    }
-    private void addRandomShapeandTrans(int radius, Stage primaryStage, Group grup, Scene scen){
+
+    private void addRandomShapeandTrans(Group grup, double[]... HeightWidth){
 
 
         int random = (int) (Math.random()*2);
 
         if (random == 0){
-            Polygon my_ball = addPoly(primaryStage,grup,scen);
-            transition(my_ball);
+            Polygon myShape = addPoly(grup);
+            transition(myShape);
         }
         else if (random == 1 ){
-            Rectangle my_ball = addRect(primaryStage,grup,scen);
-            transition(my_ball);
+            Rectangle myShape = addRect(grup, HeightWidth);
+            transition(myShape);
         }
 
+
     }
-    private Polygon addPoly(Stage primaryStage, Group grup, Scene scen){
+    private Rectangle addRect(Group grup, double[]... HeightWidth){
+
+
+        Rectangle rectangle = new Rectangle();
+        double r1 = Math.random()*75;
+        double r2 = Math.random()*75;
+        rectangle.setHeight(r1);
+        rectangle.setWidth(r2);
+
+
+
+        if (HeightWidth.length == 0){
+            double x  = Math.random()*800;
+            double y = Math.random()*800;
+            rectangle.setX(x);
+            rectangle.setY(y);
+            double[] ballxy = new double[] {x,y};
+            ballsizeArraylist.add(ballxy);
+
+
+        }
+        else {
+            double x = HeightWidth[countofrectangle][0];
+            double y = HeightWidth[countofrectangle][1];
+            rectangle.setX(x);
+            rectangle.setY(y);
+            System.out.println(x);
+        }
+
+        rectangle.setFill(Color.color(Math.random(), Math.random(), Math.random()));
+//        rectangle.setFill(Paint.valueOf("green"));
+        grup.getChildren().add(rectangle);
+        countofrectangle++;
+        return rectangle;
+    }
+
+
+    private Polygon addPoly(Group grup){
 
         int numofpoints = (int) (1 + Math.random()*9);
         Double[] polygonpoints = new Double[numofpoints];
@@ -80,31 +128,12 @@ public class Animation extends Application {
         return poly;
     }
 
-    private Rectangle addRect(Stage primaryStage, Group grup, Scene scen){
 
 
-        Rectangle ball = new Rectangle();
-        double r1 = Math.random()*75;
-        double r2 = Math.random()*75;
-        ball.setHeight(r1);
-        ball.setWidth(r2);
-        double random = Math.random()*800;
-        double random2 = Math.random()*800;
-        ball.setX(random);
-        ball.setY(random2);
-        double[] ballxy = new double[] {random,random2};
-        ballsizeArraylist.add(ballxy);
-        ball.setFill(Color.color(Math.random(), Math.random(), Math.random()));
-//        ball.setFill(Paint.valueOf("green"));
-        grup.getChildren().add(ball);
-        return ball;
-    }
-
-
-    private void transition(Shape shape){
-        Duration duration = Duration.millis(Math.random()*10000);
+    private void transition(Shape my_ball){
+        Duration duration = Duration.millis(Math.random()*20000);
         //Create new translate transition
-        TranslateTransition transition = new TranslateTransition(duration, shape);
+        TranslateTransition transition = new TranslateTransition(duration, my_ball);
         //Move in X axis by +200
         int rand1 = -500 + new Random().nextInt(1000);
         int rand2 = -500 + new Random().nextInt(1000);
@@ -120,7 +149,7 @@ public class Animation extends Application {
     }
     public String saveToFile() {
         try {
-            FileWriter writer = new FileWriter("sizes.txt");
+            FileWriter writer = new FileWriter("ballsizes.txt");
             for (double[] ballxy:ballsizeArraylist
                  ) {
                 int i = 0;
@@ -129,11 +158,11 @@ public class Animation extends Application {
 
                     String xy1 = Double.toString(xy);
                     if (i ==0){
-                    String thii = "x: "+ xy + "  ";
+                    String thii = String.valueOf(xy);
                     writer.write(thii);
                     System.out.print(thii);
                     }
-                    else{String thii = "y: "+ xy + "  ";
+                    else{String thii = " "+ xy ;
                     System.out.print(thii);
                     writer.write(thii);}
                     i++;
@@ -153,6 +182,47 @@ public class Animation extends Application {
             return "Failed";
         }
 
+
+    }
+
+    public double[][] readFile() {
+        double[][] places = new double[numofShapes][2];
+        try {
+
+            String location = "ballsizes.txt";
+            String all = Files.readString(Path.of(location));
+            String[] lines = all.split("\n");
+            int i = 0;
+            for (String line:lines
+                 ) {
+
+                String[] valuesList = line.split(" ");
+                double x = Double.parseDouble(valuesList[0]);
+                double y = Double.parseDouble(valuesList[1]);
+                places[i] = new double[] {x,y};
+                i++;
+
+            }
+            System.out.println("biyudy");
+            System.out.println(all);
+            System.out.println("buydu");
+
+        }
+        catch (Exception e){
+            System.out.println("bruh");
+
+
+        }
+        for (double[]a :places
+             ) {
+            for (double b:a
+                 ) {
+                System.out.println(b);
+
+            }
+
+        }
+        return places;
 
     }
 }
