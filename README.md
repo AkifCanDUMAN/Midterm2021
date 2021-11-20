@@ -10,6 +10,10 @@
 
 >In general, I applied commands that gave random content in the codes and I finished this project.
 
+# .JAR
+
+java --module-path "C:\Users\Akif Can\Downloads\openjfx-17.0.1_windows-x64_bin-sdk\javafx-sdk-17.0.1\lib" --add-modules javafx.controls,javafx.fxml --add-modules javafx.base,javafx.graphics -jar Midterm2021_OOP_main.jar
+
 
 # Screenshots
 
